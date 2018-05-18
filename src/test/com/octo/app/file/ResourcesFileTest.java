@@ -1,11 +1,10 @@
 package com.octo.app.file;
 
-import com.octo.app.file.RessourcesFileHelper;
+import com.octo.app.exception.ResourcesFileException;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -16,37 +15,35 @@ public class ResourcesFileTest {
 
     @Test
     public void getFileFromResourcesNullFileNameTest(){
-        assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> RessourcesFileHelper.getFileFromResources(null))
+        assertThatExceptionOfType(ResourcesFileException.class)
+                .isThrownBy(() -> ResourcesFileHelper.getFileFromResources(null))
                 .withMessageContaining("Error, the name file is null or empty");
 
     }
 
     @Test
     public void getFileFromResourcesEmptyFileNameTest(){
-        assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> RessourcesFileHelper.getFileFromResources(""))
+        assertThatExceptionOfType(ResourcesFileException.class)
+                .isThrownBy(() -> ResourcesFileHelper.getFileFromResources(""))
                 .withMessageContaining("Error, the name file is null or empty");
 
     }
 
     @Test
     public void getFileFromResourcesNotExistingFileNameTest(){
-        assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> RessourcesFileHelper.getFileFromResources(NOT_EXISTING_FILE_NAME))
+        assertThatExceptionOfType(ResourcesFileException.class)
+                .isThrownBy(() -> ResourcesFileHelper.getFileFromResources(NOT_EXISTING_FILE_NAME))
                 .withMessageContaining("not exist in resources file");
 
     }
 
     @Test
     public void getFileFromResourcesFileNameTest(){
-        try {
-            File file = RessourcesFileHelper.getFileFromResources(FILE_NAME);
-            Assert.assertNotNull(file);
-            Assert.assertEquals(FILE_NAME, file.getName());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+
+        File file = ResourcesFileHelper.getFileFromResources(FILE_NAME);
+        Assert.assertNotNull(file);
+        Assert.assertEquals(FILE_NAME, file.getName());
+
 
     }
 }

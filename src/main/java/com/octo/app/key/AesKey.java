@@ -3,15 +3,17 @@ package com.octo.app.key;
 
 import org.apache.log4j.Logger;
 
-import javax.crypto.*;
-import java.security.*;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
-
+ * Aes Key Object.
  *
  * @author epelmoine
  */
-public class AesKey {
+public class AesKey implements Key {
 
     /** LOGGER **/
     private static final Logger LOGGER = Logger.getLogger(AesKey.class);
@@ -20,16 +22,15 @@ public class AesKey {
     /** secretKey Object **/
     private SecretKey secretKey;
 
-    public AesKey() {
-        secretKey = initAesSecretKey();
-    }
     /**
-     * Create AES Key
-     *
-     * @return SecretKey the secret AES key
+     * Create an aes key.
      */
-    private static SecretKey initAesSecretKey() {
-        SecretKey secretKey = null;
+    public AesKey() {
+        generate();
+    }
+
+    @Override
+    public void generate() {
         try {
             KeyGenerator keyGen;
             keyGen = KeyGenerator.getInstance(AES_ALGORITHM_NAME);
@@ -38,7 +39,6 @@ public class AesKey {
         } catch (final NoSuchAlgorithmException e) {
             LOGGER.error(String.format("Error, during init AES Secret key %S algorithm do not exist.",AES_ALGORITHM_NAME),e);
         }
-        return secretKey;
     }
 
     /**
@@ -48,4 +48,7 @@ public class AesKey {
     public SecretKey getSecretKey() {
         return secretKey;
     }
+
+
 }
+
