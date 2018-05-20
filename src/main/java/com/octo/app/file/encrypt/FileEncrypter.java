@@ -4,16 +4,12 @@ import com.octo.app.exception.EncryptFileException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 
 public class FileEncrypter extends AbstractEncrypter {
 
@@ -58,19 +54,6 @@ public class FileEncrypter extends AbstractEncrypter {
         checkArguments(key, cipherAlgorithm);
     }
 
-    /**
-     * Initialized the cipher.
-     *
-     * @param key secret key
-     */
-    private void initCipher(SecretKey key, String cipherAlgorithm) {
-        try {
-            setCipher(Cipher.getInstance(cipherAlgorithm));
-            getCipher().init(Cipher.ENCRYPT_MODE, key);
-        } catch (final NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException e) {
-            throw new EncryptFileException("Error during initialize Cipher object : ", e);
-        }
-    }
 
     /**
      * Create encrypted file from original file name.

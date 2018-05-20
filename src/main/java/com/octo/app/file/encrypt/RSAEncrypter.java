@@ -1,15 +1,8 @@
 package com.octo.app.file.encrypt;
 
-import com.octo.app.exception.EncryptFileException;
-
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import java.io.File;
-import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 
 public class RSAEncrypter extends AbstractEncrypter {
 
@@ -20,7 +13,7 @@ public class RSAEncrypter extends AbstractEncrypter {
      * @param rsaPrivateKey   the rsa private key used to encrypt
      * @param cipherAlgorithm the cipher algorithm
      */
-    public RSAEncrypter(SecretKey secretKey, PublicKey rsaPrivateKey, String cipherAlgorithm) {
+    public RSAEncrypter(SecretKey secretKey, Key rsaPrivateKey, String cipherAlgorithm) {
         checkArguments(secretKey, rsaPrivateKey, cipherAlgorithm);
         initCipher(rsaPrivateKey, cipherAlgorithm);
         setEncryptedFile(new File("aes_key_encrypted.key"));
@@ -41,19 +34,6 @@ public class RSAEncrypter extends AbstractEncrypter {
         checkArguments(key, cipherAlgorithm);
     }
 
-    /**
-     * Initialized the cipher.
-     *
-     * @param key private key  key
-     */
-    private void initCipher(PublicKey key, String cipherAlgorithm) {
-        try {
-            setCipher(Cipher.getInstance(cipherAlgorithm));
-            getCipher().init(Cipher.ENCRYPT_MODE, key);
-        } catch (final NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException e) {
-            throw new EncryptFileException("Error during initialize Cipher object : ", e);
-        }
-    }
 
     /**
      * Encrypt secret key and write it in the encrypt file.

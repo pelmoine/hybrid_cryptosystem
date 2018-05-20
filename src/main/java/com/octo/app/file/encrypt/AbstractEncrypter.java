@@ -5,12 +5,15 @@ import com.octo.app.exception.EncryptFileException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 
-abstract class AbstractEncrypter {
+public abstract class AbstractEncrypter {
 
     private File encryptedFile;
     private Cipher cipher;
@@ -27,6 +30,20 @@ abstract class AbstractEncrypter {
         }
         if (cipherAlgorithm == null) {
             throw new IllegalArgumentException("Error, impossible to encrypt object with null cipher algorithm.");
+        }
+    }
+
+    /**
+     * Initialized the cipher.
+     *
+     * @param key secret key
+     */
+    void initCipher(Key key, String cipherAlgorithm) {
+        try {
+            setCipher(Cipher.getInstance(cipherAlgorithm));
+            getCipher().init(Cipher.ENCRYPT_MODE, key);
+        } catch (final NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException e) {
+            throw new EncryptFileException(String.format("Error during initialize Cipher object with cipher algorithm %s.", cipherAlgorithm), e);
         }
     }
 
@@ -63,7 +80,7 @@ abstract class AbstractEncrypter {
      *
      * @return encrypted file.
      */
-    File getEncryptedFile() {
+    public File getEncryptedFile() {
         return encryptedFile;
     }
 
@@ -81,7 +98,7 @@ abstract class AbstractEncrypter {
      *
      * @return cipher the cipher.
      */
-    Cipher getCipher() {
+    private Cipher getCipher() {
         return cipher;
     }
 
@@ -90,7 +107,7 @@ abstract class AbstractEncrypter {
      *
      * @param cipher the cipher.
      */
-    void setCipher(Cipher cipher) {
+    private void setCipher(Cipher cipher) {
         this.cipher = cipher;
     }
 }
