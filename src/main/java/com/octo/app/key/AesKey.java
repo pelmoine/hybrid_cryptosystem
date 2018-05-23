@@ -1,10 +1,16 @@
 package com.octo.app.key;
 
 
+import com.octo.app.exception.KeyException;
 import org.apache.log4j.Logger;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -27,6 +33,15 @@ public class AesKey implements Key {
      */
     public AesKey() {
         generate();
+    }
+
+    public AesKey(File resultFile) {
+        try {
+            byte[] data = Files.readAllBytes(Paths.get(resultFile.getPath()));
+            secretKey = new SecretKeySpec(data, "AES");
+        } catch (IOException e) {
+            throw new KeyException("Error during reading aes file decrypted to transform it in secret key.");
+        }
     }
 
     @Override

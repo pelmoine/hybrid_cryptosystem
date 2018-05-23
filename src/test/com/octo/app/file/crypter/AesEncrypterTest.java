@@ -2,7 +2,7 @@ package com.octo.app.file.crypter;
 
 import com.octo.app.exception.EncryptFileException;
 import com.octo.app.file.ResourcesFileHelper;
-import com.octo.app.file.encrypt.FileEncrypter;
+import com.octo.app.file.crypt.encrypt.AesEncrypter;
 import com.octo.app.key.AesKey;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class FileEncrypterTest {
+public class AesEncrypterTest {
 
     private static final String FILE_NAME = "fileToEncrypt.txt";
     private static final String AES_CYPHER_PADDING = "AES";
@@ -32,15 +32,15 @@ public class FileEncrypterTest {
     public void fileEncrypterCheckArgumentsTest() {
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> new FileEncrypter(null, null, null))
+                .isThrownBy(() -> new AesEncrypter(null, null, null))
                 .withMessageContaining("Error, impossible to encrypt object with null original file.");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> new FileEncrypter(createOriginalFile(), null, null))
+                .isThrownBy(() -> new AesEncrypter(createOriginalFile(), null, null))
                 .withMessageContaining("Error, impossible to encrypt object with null aes key.");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> new FileEncrypter(createOriginalFile(), createAes(), null))
+                .isThrownBy(() -> new AesEncrypter(createOriginalFile(), createAes(), null))
                 .withMessageContaining("Error, impossible to encrypt object with null cipher algorithm.");
     }
 
@@ -50,10 +50,10 @@ public class FileEncrypterTest {
     @Test
     public void initWithBadCipherTest() {
         assertThatExceptionOfType(EncryptFileException.class)
-                .isThrownBy(() -> new FileEncrypter(createOriginalFile(), createAes(), ""))
+                .isThrownBy(() -> new AesEncrypter(createOriginalFile(), createAes(), ""))
                 .withMessageContaining("Error during initialize Cipher object ");
         assertThatExceptionOfType(EncryptFileException.class)
-                .isThrownBy(() -> new FileEncrypter(createOriginalFile(), createAes(), "TOTO"))
+                .isThrownBy(() -> new AesEncrypter(createOriginalFile(), createAes(), "TOTO"))
                 .withMessageContaining("Error during initialize Cipher object ");
     }
 
@@ -62,8 +62,8 @@ public class FileEncrypterTest {
      */
     @Test
     public void fileEncrypterTest() {
-        FileEncrypter fileEncrypter = new FileEncrypter(createOriginalFile(), createAes(), AES_CYPHER_PADDING);
-        File encryptedFile = fileEncrypter.getEncryptedFile();
+        AesEncrypter AesEncrypter = new AesEncrypter(createOriginalFile(), createAes(), AES_CYPHER_PADDING);
+        File encryptedFile = AesEncrypter.getResultFile();
         Assert.assertNotNull(encryptedFile);
         Assert.assertTrue(encryptedFile.isFile());
         Assert.assertTrue(encryptedFile.length() > 0);

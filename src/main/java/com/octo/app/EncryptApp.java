@@ -2,8 +2,8 @@ package com.octo.app;
 
 
 import com.octo.app.file.ResourcesFileHelper;
-import com.octo.app.file.encrypt.FileEncrypter;
-import com.octo.app.file.encrypt.RSAEncrypter;
+import com.octo.app.file.crypt.encrypt.AesEncrypter;
+import com.octo.app.file.crypt.encrypt.RsaEncrypter;
 import com.octo.app.key.AesKey;
 import com.octo.app.key.RsaKey;
 
@@ -24,10 +24,9 @@ import java.io.File;
  *
  * @author epelmoine
  */
-class App
-{
-    private static final String AES_CYPHER_PADDING = "AES";
-    private static final String RSA_CYPHER_PADDING = "RSA/ECB/PKCS1Padding";
+class EncryptApp {
+    private static final String AES_CIPHER_PADDING = "AES";
+    private static final String RSA_CIPHER_PADDING = "RSA/ECB/PKCS1Padding";
     private static final String NAME_FILE_TO_ENCRYPT = "ebillet.pdf";
     /**
      * Application entry point
@@ -38,10 +37,10 @@ class App
         File fileToEncrypt = ResourcesFileHelper.getFileFromResources(NAME_FILE_TO_ENCRYPT);
         // Encrypt file with AES
         AesKey aesKey = new AesKey();
-        new FileEncrypter(fileToEncrypt, aesKey.getSecretKey(), AES_CYPHER_PADDING);
+        new AesEncrypter(fileToEncrypt, aesKey.getSecretKey(), AES_CIPHER_PADDING);
         // Encrypt AES with RSA
         RsaKey rsaKey = new RsaKey();
-        new RSAEncrypter(aesKey.getSecretKey(), rsaKey.getRsaPublicKey(), RSA_CYPHER_PADDING);
+        new RsaEncrypter(aesKey.getSecretKey(), rsaKey.getRsaPublicKey(), RSA_CIPHER_PADDING);
         rsaKey.encryptAesKey(aesKey);
     }
 }

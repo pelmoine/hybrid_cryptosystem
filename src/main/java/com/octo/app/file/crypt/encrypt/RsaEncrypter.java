@@ -1,10 +1,13 @@
-package com.octo.app.file.encrypt;
+package com.octo.app.file.crypt.encrypt;
 
+import com.octo.app.file.crypt.AbstractEncrypter;
+
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import java.io.File;
 import java.security.Key;
 
-public class RSAEncrypter extends AbstractEncrypter {
+public class RsaEncrypter extends AbstractEncrypter {
 
     /**
      * Constructor Encrypter for encrypt key
@@ -13,11 +16,10 @@ public class RSAEncrypter extends AbstractEncrypter {
      * @param rsaPrivateKey   the rsa private key used to encrypt
      * @param cipherAlgorithm the cipher algorithm
      */
-    public RSAEncrypter(SecretKey secretKey, Key rsaPrivateKey, String cipherAlgorithm) {
+    public RsaEncrypter(SecretKey secretKey, Key rsaPrivateKey, String cipherAlgorithm) {
         checkArguments(secretKey, rsaPrivateKey, cipherAlgorithm);
-        initCipher(rsaPrivateKey, cipherAlgorithm);
-        setEncryptedFile(new File("aes_key_encrypted.key"));
-        encrypt(secretKey, getEncryptedFile());
+        initCipher(rsaPrivateKey, cipherAlgorithm, Cipher.ENCRYPT_MODE);
+        encrypt(secretKey);
     }
 
     /**
@@ -39,11 +41,11 @@ public class RSAEncrypter extends AbstractEncrypter {
      * Encrypt secret key and write it in the encrypt file.
      *
      * @param secretKey   the secret key to encrypt.
-     * @param encryptFile the encrypted file.
      */
-    private void encrypt(SecretKey secretKey, File encryptFile) {
+    private void encrypt(SecretKey secretKey) {
+        resultFile = new File("aes_key_encrypted.key");
         byte[] inputBytes = secretKey.getEncoded();
-        byte[] outputBytes = getEncryptedBytes(inputBytes);
-        writeEncryptedFile(outputBytes, encryptFile);
+        byte[] outputBytes = getBytesFromCipher(inputBytes);
+        writeByteInFile(outputBytes, resultFile);
     }
 }

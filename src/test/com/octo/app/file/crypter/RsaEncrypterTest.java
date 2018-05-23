@@ -1,7 +1,7 @@
 package com.octo.app.file.crypter;
 
 import com.octo.app.exception.EncryptFileException;
-import com.octo.app.file.encrypt.RSAEncrypter;
+import com.octo.app.file.crypt.encrypt.RsaEncrypter;
 import com.octo.app.key.AesKey;
 import com.octo.app.key.RsaKey;
 import org.junit.Assert;
@@ -13,9 +13,8 @@ import java.security.Key;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class RSAEncrypterTest {
+public class RsaEncrypterTest {
 
-    private static final String FILE_NAME = "fileToEncrypt.txt";
     private static final String RSA_CYPHER_PADDING = "RSA/ECB/PKCS1Padding";
 
     private SecretKey getAesSecretKey() {
@@ -32,15 +31,15 @@ public class RSAEncrypterTest {
     @Test
     public void rsaEncrypterCheckArgumentsTest() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> new RSAEncrypter(null, null, null))
+                .isThrownBy(() -> new RsaEncrypter(null, null, null))
                 .withMessageContaining("Error, impossible to encrypt secret key because it's a null object.");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> new RSAEncrypter(getAesSecretKey(), null, null))
+                .isThrownBy(() -> new RsaEncrypter(getAesSecretKey(), null, null))
                 .withMessageContaining("Error, impossible to encrypt object with null aes key.");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> new RSAEncrypter(getAesSecretKey(), createRSAPublicKey(), null))
+                .isThrownBy(() -> new RsaEncrypter(getAesSecretKey(), createRSAPublicKey(), null))
                 .withMessageContaining("Error, impossible to encrypt object with null cipher algorithm.");
     }
 
@@ -50,10 +49,10 @@ public class RSAEncrypterTest {
     @Test
     public void initCipherWithBadArgsTest() {
         assertThatExceptionOfType(EncryptFileException.class)
-                .isThrownBy(() -> new RSAEncrypter(getAesSecretKey(), createRSAPublicKey(), ""))
+                .isThrownBy(() -> new RsaEncrypter(getAesSecretKey(), createRSAPublicKey(), ""))
                 .withMessageContaining("Error during initialize Cipher object ");
         assertThatExceptionOfType(EncryptFileException.class)
-                .isThrownBy(() -> new RSAEncrypter(getAesSecretKey(), createRSAPublicKey(), "TOTO"))
+                .isThrownBy(() -> new RsaEncrypter(getAesSecretKey(), createRSAPublicKey(), "TOTO"))
                 .withMessageContaining("Error during initialize Cipher object ");
     }
 
@@ -62,8 +61,8 @@ public class RSAEncrypterTest {
      */
     @Test
     public void RsaEncrypterTest() {
-        RSAEncrypter rsaEncrypter = new RSAEncrypter(getAesSecretKey(), createRSAPublicKey(), RSA_CYPHER_PADDING);
-        File encryptedAesKey = rsaEncrypter.getEncryptedFile();
+        RsaEncrypter rsaEncrypter = new RsaEncrypter(getAesSecretKey(), createRSAPublicKey(), RSA_CYPHER_PADDING);
+        File encryptedAesKey = rsaEncrypter.getResultFile();
         Assert.assertNotNull(rsaEncrypter);
         Assert.assertTrue(encryptedAesKey.isFile());
         Assert.assertTrue(encryptedAesKey.length() > 0);

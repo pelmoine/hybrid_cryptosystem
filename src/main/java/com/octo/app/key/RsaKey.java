@@ -1,6 +1,7 @@
 package com.octo.app.key;
 
 import com.octo.app.exception.KeyException;
+import com.octo.app.file.ResourcesFileHelper;
 import org.apache.log4j.Logger;
 
 import javax.crypto.*;
@@ -51,8 +52,8 @@ public class RsaKey implements Key {
             generateNewRsaKeyFile();
 
         } else {
-            loadRsaPrivateKeyFromFile();
-            loadRsaPublicKeyFromFile();
+            loadPrivateKeyFromFile();
+            loadPublicKeyFromFile();
         }
     }
 
@@ -63,17 +64,11 @@ public class RsaKey implements Key {
      * @param rsaPublicKeyFile  rsa public key file
      */
     private void deletePreviousRsaKeyFile(File rsaPrivateKeyFile, File rsaPublicKeyFile) {
-        deleteFile(rsaPrivateKeyFile);
-        deleteFile(rsaPublicKeyFile);
-    }
 
-    private void deleteFile(File file) {
-        try {
-            Files.delete(file.toPath());
-        } catch (IOException e) {
-            throw new KeyException(String.format("Error during the deleting of %s file.", file.getName()), e);
-        }
-        LOGGER.info(String.format("%s file has been correctly deleted.", file.getName()));
+        ResourcesFileHelper.deleteFile(rsaPrivateKeyFile);
+        rsaPrivateKey = null;
+        ResourcesFileHelper.deleteFile(rsaPublicKeyFile);
+        rsaPublicKey = null;
     }
 
     private void generateNewRsaKeyFile() {
@@ -219,12 +214,22 @@ public class RsaKey implements Key {
     /**
      * load the rsa private key from file.
      */
-    private void loadRsaPrivateKeyFromFile() {
+    private void loadPrivateKeyFromFile() {
+        loadPrivateKeyFromFile(RSA_PRIVATE_KEY_FILE_NAME);
+    }
+
+
+    /**
+     * load the rsa private key from file.
+     *
+     * @param rsaPrivateKeyNameFile the rsa private key file name.
+     */
+    public void loadPrivateKeyFromFile(String rsaPrivateKeyNameFile) {
         try {
-            byte[] keyBytes = Files.readAllBytes(Paths.get(RSA_PRIVATE_KEY_FILE_NAME));
+            byte[] keyBytes = Files.readAllBytes(Paths.get(rsaPrivateKeyNameFile));
             PKCS8EncodedKeySpec spec =
                     new PKCS8EncodedKeySpec(keyBytes);
-            KeyFactory kf = KeyFactory.getInstance("RSA");
+            KeyFactory kf = KeyFactory.getInstance(RSA_ALGORITHM_NAME);
             rsaPrivateKey = kf.generatePrivate(spec);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             LOGGER.error("Error during loading the rsa private key. ", e);
@@ -234,16 +239,24 @@ public class RsaKey implements Key {
     /**
      * Load the rsa public key from file.
      */
-    private void loadRsaPublicKeyFromFile() {
+    private void loadPublicKeyFromFile() {
+        loadPublicKeyFromFile(RSA_PUBLIC_KEY_FILE_NAME);
+    }
+
+    /**
+     * Load the rsa public key from file.
+     *
+     * @param rsaPublicKeyNameFile the rsa public key file name.
+     */
+    public void loadPublicKeyFromFile(String rsaPublicKeyNameFile) {
         try {
-            byte[] keyBytes = Files.readAllBytes(Paths.get(RSA_PUBLIC_KEY_FILE_NAME));
+            byte[] keyBytes = Files.readAllBytes(Paths.get(rsaPublicKeyNameFile));
             X509EncodedKeySpec spec =
                     new X509EncodedKeySpec(keyBytes);
-            KeyFactory kf = KeyFactory.getInstance("RSA");
+            KeyFactory kf = KeyFactory.getInstance(RSA_ALGORITHM_NAME);
             rsaPublicKey = kf.generatePublic(spec);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             LOGGER.error("Error during loading the rsa public key. ", e);
         }
     }
-
 }

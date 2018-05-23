@@ -14,4 +14,15 @@ public class ResourcesFileException extends RuntimeException {
     public ResourcesFileException(String message) {
         super(message);
     }
+
+    /**
+     * Create an resources file exception with a message and a cause.
+     *
+     * @param message the exception message.
+     * @param cause   the exception cause.
+     */
+    public ResourcesFileException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.octo.app.file.encrypt;
+package com.octo.app.file.crypt;
 
 import com.octo.app.exception.EncryptFileException;
 
@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 
 public abstract class AbstractEncrypter {
 
-    private File encryptedFile;
+    protected File resultFile;
     private Cipher cipher;
 
     /**
@@ -24,7 +24,7 @@ public abstract class AbstractEncrypter {
      * @param key             the key
      * @param cipherAlgorithm the cipher algorithm
      */
-    void checkArguments(Key key, String cipherAlgorithm) {
+    protected void checkArguments(Key key, String cipherAlgorithm) {
         if (key == null) {
             throw new IllegalArgumentException("Error, impossible to encrypt object with null aes key.");
         }
@@ -38,10 +38,10 @@ public abstract class AbstractEncrypter {
      *
      * @param key secret key
      */
-    void initCipher(Key key, String cipherAlgorithm) {
+    protected void initCipher(Key key, String cipherAlgorithm, int cipherMode) {
         try {
             setCipher(Cipher.getInstance(cipherAlgorithm));
-            getCipher().init(Cipher.ENCRYPT_MODE, key);
+            getCipher().init(cipherMode, key);
         } catch (final NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException e) {
             throw new EncryptFileException(String.format("Error during initialize Cipher object with cipher algorithm %s.", cipherAlgorithm), e);
         }
@@ -53,7 +53,7 @@ public abstract class AbstractEncrypter {
      * @param inputBytes the input byte not encrypted yet.
      * @return the encrypted bytes.
      */
-    byte[] getEncryptedBytes(byte[] inputBytes) {
+    protected byte[] getBytesFromCipher(byte[] inputBytes) {
         try {
             return cipher.doFinal(inputBytes);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
@@ -65,34 +65,19 @@ public abstract class AbstractEncrypter {
      * Write the output byte in the encrypted file.
      *
      * @param outputBytes output bytes.
-     * @param encryptFile encrypted file.
+     * @param file encrypted file.
      */
-    void writeEncryptedFile(byte[] outputBytes, File encryptFile) {
-        try (FileOutputStream outputStream = new FileOutputStream(encryptFile)) {
+    protected void writeByteInFile(byte[] outputBytes, File file) {
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(outputBytes);
         } catch (IOException e) {
             throw new EncryptFileException("Error during writting ecrypted file.\n", e);
         }
     }
 
-    /**
-     * Get encrypted file.
-     *
-     * @return encrypted file.
-     */
-    public File getEncryptedFile() {
-        return encryptedFile;
+    public File getResultFile() {
+        return resultFile;
     }
-
-    /**
-     * set encrypted file.
-     *
-     * @param encryptedFile file.
-     */
-    void setEncryptedFile(File encryptedFile) {
-        this.encryptedFile = encryptedFile;
-    }
-
     /**
      * Get Cipher.
      *
